@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Find buildozer.spec
+        run: |
+          find . -name "buildozer.spec" -type f
+          BUILDOZER_DIR=$(dirname $(find . -name "buildozer.spec" -type f | head -1))
+          echo "BUILDOZER_DIR=$BUILDOZER_DIR" >> $GITHUB_ENV
+      
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -23,10 +29,12 @@ jobs:
           pip install buildozer
       
       - name: Build APK
-        run: buildozer android debug
+        run: |
+          cd ${{ env.BUILDOZER_DIR }}
+          buildozer android debug
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: apk
-          path: "*.apk"
+          path: "**/*.apk"
