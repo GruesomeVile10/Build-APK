@@ -33,7 +33,12 @@ jobs:
       - name: Accept Android SDK licenses
         run: |
           cd ${{ env.BUILDOZER_DIR }}
-          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          # Initialize buildozer to download SDK
+          buildozer android debug 2>&1 | head -30 || true
+          # Accept all licenses
+          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          # Install required build-tools
+          $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" "platforms;android-33"
       
       - name: Build APK
         run: |
