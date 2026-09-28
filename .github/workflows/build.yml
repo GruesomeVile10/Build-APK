@@ -30,14 +30,15 @@ jobs:
           pip install buildozer
           pip install --upgrade git+https://github.com/kivy/python-for-android.git
       
+      - name: Initialize buildozer (downloads SDK/NDK)
+        run: |
+          cd ${{ env.BUILDOZER_DIR }}
+          buildozer android debug 2>&1 | tail -20 || true
+      
       - name: Accept Android SDK licenses
         run: |
           cd ${{ env.BUILDOZER_DIR }}
-          # Initialize buildozer to download SDK
-          buildozer android debug 2>&1 | head -30 || true
-          # Accept all licenses
           yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-          # Install required build-tools
           $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" "platforms;android-33"
       
       - name: Build APK
